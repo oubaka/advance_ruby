@@ -1,0 +1,48 @@
+require 'csv'
+
+class Reader
+  
+  def initialize(file, name)
+    @file = file
+    @name = name
+  end
+
+  def read
+    begin
+      records = CSV.readlines(@file, headers: true)
+    rescue => exception
+      raise exception
+      return
+    end
+
+    # define dynamic class
+    dynamic_class = Class.new do
+      def initialize(row)    
+        @row = row    
+      end
+
+      def to_s
+        self.name() + "," + self.age()+ "," + self.city()
+      end
+    end
+
+    records.headers.each do |h|
+      dynamic_class.class_eval do
+        define_method h do      
+          @row[h] 
+        end
+      end
+    end
+
+    # setting the class name
+    Object.const_set(@name.capitalize, dynamic_class)
+
+    users_list = []
+    records.each do |r|
+      user = dynamic_class.new(r)   
+      users_list << user
+    end
+    users_list
+  end
+
+end

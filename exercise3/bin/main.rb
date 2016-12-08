@@ -9,3 +9,4 @@ Object.define_singleton_method(method_name) do
 end
 
 Object.send(method_name)
+  
