@@ -7,39 +7,42 @@ class Reader
     @name = name
   end
 
-  def read
-    begin
-      records = CSV.readlines(@file, headers: true)
-    rescue => exception
-      raise exception
-      return
-    end
-
+  def get_model
     # define dynamic class
-    dynamic_class = Class.new do
+    dynamic_model = Class.new do
       def initialize(row)    
         @row = row    
       end
 
       def to_s
-        self.name() + "," + self.age()+ "," + self.city()
+        "#{self.name()}, #{self.age()}, #{self.city()}"        
       end
     end
+    dynamic_model
+  end
 
+  def create_methods(records, dynamic_model)
     records.headers.each do |h|
-      dynamic_class.class_eval do
+      dynamic_model.class_eval do
         define_method h do      
           @row[h] 
         end
       end
     end
+    dynamic_model
+  end
+
+  def read
+    records = CSV.readlines(@file, headers: true)
+    
+    dynamic_model = create_methods(records, get_model)    
 
     # setting the class name
-    Object.const_set(@name.capitalize, dynamic_class)
+    Object.const_set(@name.capitalize, dynamic_model)
 
     users_list = []
     records.each do |r|
-      user = dynamic_class.new(r)   
+      user = dynamic_model.new(r)   
       users_list << user
     end
     users_list
