@@ -15,7 +15,7 @@ class Reader
       end
 
       def to_s
-        "#{self.name()}, #{self.age()}, #{self.city()}"        
+        "#{name}, #{age}, #{city}"        
       end
     end
     dynamic_model
