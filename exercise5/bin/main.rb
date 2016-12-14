@@ -10,5 +10,10 @@ class << string
   end
 end
 
+string.define_singleton_method(:message) do
+  puts "message: #{self}"
+end
+
 string.say_hello
 string.content
+string.message
